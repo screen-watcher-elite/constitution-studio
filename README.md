@@ -1,78 +1,100 @@
 # Constitution Studio ⚖️
 
-An interactive visual studio for **Constitutional AI (CAI)** — Anthropic's flagship alignment methodology. Test, audit, and visualize the 2-phase **Critique → Revision** loop in real time with visual text diffs, customizable principles, and safety metrics.
+> An interactive visual playground for [Anthropic's Constitutional AI (CAI)](https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback) alignment loop. Test, visualize, and audit the 2-phase **Critique → Revision** cycle in real-time — entirely in your browser.
 
-**Zero backend required.** Runs 100% client-side in the browser. Deployable to GitHub Pages in 1 click.
-
----
-
-## What is Constitutional AI?
-
-Developed by Anthropic (Bai et al., 2022), **Constitutional AI** trains models to critique and revise their own outputs using a set of written principles (a "constitution"), rather than relying on human preference labels for every judgment:
-
-```
-[ User Request ]
-       │
-       ▼
-[ Initial Baseline Response ] ───► [ Phase 1: Constitutional Critique ]
-                                             │
-                                             ▼
-                                   [ Phase 2: Revision ] ───► [ Aligned Output ]
-```
-
-Constitution Studio brings this loop to life in an interactive, visual interface.
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+![Zero Backend](https://img.shields.io/badge/backend-none-brightgreen)
+![BYOK](https://img.shields.io/badge/API-BYOK-orange)
 
 ---
 
-## Features
+## ✨ What It Does
 
-- 🔄 **2-Phase Alignment Visualizer**: Watch the model isolate specific constitutional article violations in Phase 1, then execute a targeted rewrite in Phase 2.
-- 🔍 **Side-by-Side Visual Diff**: Color-coded red/green diff view highlighting exact redactions and aligned additions.
-- 📜 **Customizable Rulebook**: Toggle individual constitutional articles on/off, add custom principles, or switch presets (Anthropic Harmlessness v2, Academic Neutrality, Privacy & Transparency).
-- 📊 **Alignment Metrics**: Real-time evaluation of Harmlessness Score, Helpfulness Retention, Refusal Tone Quality, and multi-pass latency.
-- 🔑 **BYOK (Bring Your Own Key)**: Direct client-side integration with Anthropic Claude API or OpenRouter. Keys are stored strictly in `localStorage` and never sent to any intermediary server.
-- ⚡ **Interactive Demo Mode**: Full procedural simulation included out of the box so reviewers can test the studio with zero setup or API keys.
+Constitution Studio lets you **interactively simulate** how Constitutional AI works:
+
+1. **Define Constitutional Principles** — Pick from presets (Anthropic Harmlessness, Academic Neutrality, Privacy, Software Quality) or write your own.
+2. **Provide a Baseline Response** — Enter a model's raw, unaligned output.
+3. **Run the Loop** — Watch the 2-phase critique → revision cycle execute:
+   - **Phase 1: Critique** — Each active principle evaluates the baseline and flags violations.
+   - **Phase 2: Revision** — The response is rewritten to comply with all principles while maximizing helpfulness.
+4. **Inspect Results** — View violations, the revised output, a color-coded visual diff, and alignment metrics.
 
 ---
 
-## Quick Start (Run Locally)
+## 🚀 Features
 
-### Option 1: Open Directly
-Simply double-click [`index.html`](index.html) in any modern web browser.
+| Feature | Description |
+|---------|------------|
+| **4 Preset Constitutions** | Anthropic Harmlessness, Academic Neutrality, Privacy & Data, Software Quality |
+| **Custom Principles** | Add your own constitutional articles at runtime |
+| **4 Benchmark Scenarios** | Pre-loaded prompts to demonstrate common alignment patterns |
+| **Visual Diff** | Color-coded word-level diff between baseline and revision |
+| **Alignment Metrics** | Harmlessness score, helpfulness retention, tone quality, latency |
+| **Animated Counters** | Metrics animate up with smooth counting effect |
+| **Toast Notifications** | Non-intrusive feedback for user actions |
+| **BYOK API Mode** | Connect your own Anthropic or OpenRouter API key for live LLM evaluation |
+| **Demo Simulation** | Built-in procedural simulation engine — works with zero API keys |
+| **Dark Glassmorphism 2.0** | Premium spatial UI with ambient glows, noise textures, and spring animations |
 
-### Option 2: Local HTTP Server
+---
+
+## 🎯 Quick Start
+
+**No build step. No dependencies. No server.**
+
+1. Clone or download this repo
+2. Open `index.html` in any modern browser
+3. Click a scenario pill (e.g., "💻 Code Review")
+4. Hit **⚡ Run Constitutional Alignment Loop**
+5. Switch between the three tabs to explore results
+
 ```bash
-# Using Python
-python -m http.server 3000
-
-# Or using Node.js
-npx serve .
+git clone https://github.com/screen-watcher-elite/constitution-studio.git
+cd constitution-studio
+# Just open index.html in your browser — that's it!
 ```
-Then navigate to `http://localhost:3000`.
 
 ---
 
-## Free 1-Click Deployment (GitHub Pages)
+## 🔑 API Configuration (Optional)
 
-Because Constitution Studio is a static web app, you can host it for free forever on GitHub Pages:
+Constitution Studio works in **Demo Mode** out of the box with a built-in simulation engine.
 
-1. Push this repository to GitHub.
-2. Go to **Settings** → **Pages**.
-3. Under **Branch**, select `main` and `/ (root)`.
-4. Click **Save**.
-5. Your studio will be live at `https://<your-username>.github.io/constitution-studio`!
+For live LLM evaluation, click the **🔑 Demo Mode** button in the header and configure:
 
----
+| Provider | Model | Notes |
+|----------|-------|-------|
+| **Anthropic** | `claude-3-5-sonnet-20241022` | Direct API, requires `x-api-key` |
+| **OpenRouter** | `anthropic/claude-3.5-sonnet` | Supports free and commercial models |
 
-## Tech Stack
-
-- **Core**: Vanilla HTML5, Vanilla JavaScript (ES Modules), Vanilla CSS
-- **Typography**: Inter & JetBrains Mono (Google Fonts)
-- **Aesthetic**: Dark Glassmorphism, Anthropic Copper Accent (`#D97706`), High-contrast accessibility
-- **License**: Apache 2.0
+Your API key is stored **only** in your browser's `localStorage` and is **never** transmitted to any external server besides the provider you configure.
 
 ---
 
-## License
+## 🏗️ Architecture
 
-Apache 2.0 — see [LICENSE](LICENSE) for details.
+```
+constitution-studio/
+├── index.html    — Semantic HTML5 layout with glassmorphic panels
+├── style.css     — Premium design system (1200+ lines, zero dependencies)
+├── app.js        — Complete application logic (IIFE, zero dependencies)
+├── README.md     — This file
+└── LICENSE       — Apache 2.0
+```
+
+- **Zero npm dependencies** — Pure HTML + CSS + JS
+- **No build step** — Works directly from the filesystem
+- **No server** — 100% client-side, deployable to GitHub Pages
+- **IIFE pattern** — No global scope pollution
+
+---
+
+## 📄 License
+
+[Apache License 2.0](LICENSE) — Free to use, modify, and distribute.
+
+---
+
+<p align="center">
+  Built by <a href="https://github.com/screen-watcher-elite">screen-watcher-elite</a>
+</p>

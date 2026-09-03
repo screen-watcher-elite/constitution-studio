@@ -57,9 +57,9 @@
             <label for="preset-select">Preset:</label>
             <select id="preset-select">
               <option value="anthropic-harmless">Anthropic Harmlessness (CAI v2)</option>
-              <option value="cyber-defense">Cybersecurity & Exploit Defense</option>
-              <option value="bio-cbrn">Bio-CBRN & Extreme Harms</option>
-              <option value="wce-ethics">Academic & Ethical AI (WCE Sangli)</option>
+              <option value="academic-neutrality">Academic & Scholarly Neutrality</option>
+              <option value="privacy-respect">Privacy & Data Transparency</option>
+              <option value="software-quality">Software Quality & Security</option>
               <option value="custom">Custom Principles</option>
             </select>
           </div>
@@ -67,7 +67,7 @@
 
         <!-- Principles List -->
         <div id="principles-container" class="principles-container">
-          <!-- Dynamically populated principles with enable/disable switches -->
+          <!-- Dynamically populated -->
         </div>
 
         <button id="btn-add-principle" class="btn btn-outline-dashed btn-full">
@@ -78,13 +78,13 @@
         <div class="scenario-section">
           <div class="section-subheading">
             <span>⚡ Load Benchmark Scenario</span>
-            <span class="subtext">Click to autofill query</span>
+            <span class="subtext">Click to autofill</span>
           </div>
           <div class="scenario-pills">
-            <button class="pill" data-scenario="code-review">💻 Code Review Feedback</button>
-            <button class="pill" data-scenario="academic-neutrality">📚 Neutral Academic Tone</button>
-            <button class="pill" data-scenario="privacy-respect">🔒 Data Privacy Notice</button>
-            <button class="pill" data-scenario="helpful-explanation">💡 Educational Explainer</button>
+            <button class="pill" data-scenario="code-review">💻 Code Review</button>
+            <button class="pill" data-scenario="academic-neutrality">📚 Academic Tone</button>
+            <button class="pill" data-scenario="privacy-respect">🔒 Data Privacy</button>
+            <button class="pill" data-scenario="helpful-explanation">💡 Explainer</button>
           </div>
         </div>
 
@@ -93,13 +93,13 @@
           <div class="section-subheading">
             <span>Prompt (User Request)</span>
           </div>
-          <textarea id="input-prompt" rows="2" placeholder="Enter user prompt that triggers potential safety boundaries..."></textarea>
+          <textarea id="input-prompt" rows="2" placeholder="Enter user prompt..."></textarea>
 
           <div class="section-subheading">
             <span>Initial (Unrevised) Output</span>
-            <span class="subtext">The baseline draft before constitutional revision</span>
+            <span class="subtext">Baseline before revision</span>
           </div>
-          <textarea id="input-response" rows="5" placeholder="Enter the model's initial raw response to be critiqued and revised..."></textarea>
+          <textarea id="input-response" rows="4" placeholder="Enter the model's initial raw response..."></textarea>
         </div>
 
         <div class="action-footer">
@@ -114,9 +114,9 @@
         
         <!-- Tab Bar -->
         <div class="panel-tabs">
-          <button class="tab-btn active" data-tab="tab-loop">🔄 Critique & Revision Loop</button>
-          <button class="tab-btn" data-tab="tab-diff">🔍 Side-by-Side Visual Diff</button>
-          <button class="tab-btn" data-tab="tab-metrics">📊 Safety & Helpfulness Metrics</button>
+          <button class="tab-btn active" data-tab="tab-loop">🔄 Critique & Revision</button>
+          <button class="tab-btn" data-tab="tab-diff">🔍 Visual Diff</button>
+          <button class="tab-btn" data-tab="tab-metrics">📊 Metrics</button>
         </div>
 
         <!-- Tab Content 1: 2-Phase Loop Visualizer -->
@@ -126,13 +126,13 @@
             <div class="phase-header">
               <span class="phase-step">PHASE 1</span>
               <span class="phase-title">Constitutional Critique</span>
-              <span id="badge-critique-status" class="badge badge-neutral">Waiting for execution</span>
+              <span id="badge-critique-status" class="badge badge-neutral">Waiting</span>
             </div>
             <div class="phase-body">
               <div id="critique-violations" class="violations-list">
                 <p class="placeholder-text">Run the loop to observe constitutional critique violations.</p>
               </div>
-              <div id="critique-explanation" class="critique-explanation"></div>
+              <div id="critique-explanation" class="critique-explanation hidden"></div>
             </div>
           </div>
 
@@ -141,14 +141,14 @@
             <div class="phase-header">
               <span class="phase-step">PHASE 2</span>
               <span class="phase-title">Constitutional Revision</span>
-              <span id="badge-revision-status" class="badge badge-neutral">Waiting for execution</span>
+              <span id="badge-revision-status" class="badge badge-neutral">Waiting</span>
             </div>
             <div class="phase-body">
               <div id="revision-output" class="revision-output-text">
-                <p class="placeholder-text">The rewritten, aligned response will appear here with harmful elements neutralized and helpful context preserved.</p>
+                <p class="placeholder-text">The revised, aligned response will appear here.</p>
               </div>
               <div class="revision-actions">
-                <button id="btn-copy-revision" class="btn btn-secondary btn-sm" disabled>📋 Copy Revision</button>
+                <button id="btn-copy-revision" class="btn btn-secondary btn-sm" disabled>📋 Copy</button>
                 <button id="btn-switch-to-diff" class="btn btn-ghost btn-sm">Inspect Diff →</button>
               </div>
             </div>
@@ -160,12 +160,12 @@
           <div class="diff-container">
             <div class="diff-header">
               <div class="diff-legend">
-                <span class="legend-item"><span class="legend-box red"></span> Redacted / Harmful Baseline</span>
-                <span class="legend-item"><span class="legend-box green"></span> Constitutionally Aligned Revision</span>
+                <span class="legend-item"><span class="legend-box red"></span> Original Baseline</span>
+                <span class="legend-item"><span class="legend-box green"></span> Revised Output</span>
               </div>
             </div>
             <div id="diff-output" class="diff-display">
-              <p class="placeholder-text">Visual diff will render additions and redactions after running the loop.</p>
+              <p class="placeholder-text">Visual diff will render after running the loop.</p>
             </div>
           </div>
         </div>
@@ -189,15 +189,15 @@
 
             <div class="metric-card">
               <div class="metric-label">Refusal Tone Quality</div>
-              <div id="metric-tone" class="metric-value blue">Objective</div>
-              <div class="metric-subtext">Avoidance of moralizing / preaching</div>
+              <div id="metric-tone" class="metric-value blue">--</div>
+              <div class="metric-subtext">Non-moralizing language</div>
               <div class="progress-bar"><div id="bar-tone" class="progress-fill blue" style="width: 0%"></div></div>
             </div>
 
             <div class="metric-card">
               <div class="metric-label">Revision Latency</div>
-              <div id="metric-latency" class="metric-value">-- ms</div>
-              <div class="metric-subtext">Multi-pass execution time</div>
+              <div id="metric-latency" class="metric-value">--</div>
+              <div class="metric-subtext">Execution time</div>
               <div class="progress-bar"><div id="bar-latency" class="progress-fill" style="width: 0%"></div></div>
             </div>
           </div>
@@ -206,9 +206,9 @@
           <div class="heuristics-card">
             <h3>Anthropic Constitutional AI Insights</h3>
             <ul>
-              <li><strong>Self-Correction vs RLHF:</strong> Instead of human labelers rating thousands of outputs, the model critiques its own response using principles, creating clean SFT data for the next training iteration (RLAIF).</li>
-              <li><strong>Helpful Refusals:</strong> Modern CAI avoids preachy refusals ("As an AI, I cannot...") and instead provides transparent, educational alternatives while refusing harmful operational steps.</li>
-              <li><strong>Dual-Loop Iteration:</strong> Multiple revision passes can be applied sequentially for high-stakes domains (cyber, CBRN) until all constitutional articles pass.</li>
+              <li><strong>Self-Correction vs RLHF:</strong> Instead of human labelers rating outputs, the model critiques its own response using principles, creating clean SFT data for the next training iteration (RLAIF).</li>
+              <li><strong>Helpful Refusals:</strong> Modern CAI avoids preachy refusals and instead provides transparent, educational alternatives while declining unsafe operational steps.</li>
+              <li><strong>Dual-Loop Iteration:</strong> Multiple revision passes can be applied sequentially until all constitutional articles pass.</li>
             </ul>
           </div>
         </div>
@@ -226,14 +226,14 @@
       </div>
       <div class="modal-body">
         <p class="modal-desc">
-          Constitution Studio runs 100% locally in your browser. Your keys are stored strictly in your browser's <code>localStorage</code> and are never transmitted to any external server.
+          Constitution Studio runs 100% locally in your browser. Your keys are stored strictly in <code>localStorage</code> and never transmitted externally.
         </p>
 
         <div class="form-group">
           <label for="provider-select">Provider:</label>
           <select id="provider-select">
             <option value="demo">Demo Simulation Mode (No Key Needed)</option>
-            <option value="openrouter">OpenRouter API (Free & Commercial Models)</option>
+            <option value="openrouter">OpenRouter API (Free & Commercial)</option>
             <option value="anthropic">Anthropic Claude API (Direct)</option>
           </select>
         </div>
@@ -245,7 +245,7 @@
 
         <div id="model-input-container" class="form-group hidden">
           <label for="input-model-name">Model Identifier:</label>
-          <input type="text" id="input-model-name" placeholder="anthropic/claude-3.5-sonnet or openrouter/free">
+          <input type="text" id="input-model-name" placeholder="anthropic/claude-3.5-sonnet">
         </div>
       </div>
       <div class="modal-footer">
@@ -255,6 +255,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
