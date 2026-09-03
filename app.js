@@ -524,6 +524,11 @@
 
   function runSimulationLoop(promptText, baseline, activePrinciples) {
     return new Promise(function (resolve) {
+      // Phase 1 — critique analysis (600–900ms)
+      var critDelay = 600 + Math.random() * 300;
+      // Phase 2 — revision (additional 400–700ms after critique)
+      var revDelay = 400 + Math.random() * 300;
+
       setTimeout(function () {
         var violations = [];
         var revised = baseline;
@@ -531,62 +536,71 @@
         var lowerBase = baseline.toLowerCase();
         var harmScore = 72;
         var helpScore = 85;
+        var toneScore = 70;
         var toneLabel = 'Neutral';
 
         activePrinciples.forEach(function (principle) {
           var pText = principle.text.toLowerCase();
 
+          // ── Code Review scenario ─────────────────────────────────────────
           if (pText.includes('test') || pText.includes('deploy') || pText.includes('sanitization') || pText.includes('validation')) {
             if (lowerBase.includes('no need to test') || lowerBase.includes('just push it')) {
               violations.push({ article: principle.title, summary: 'Advises deploying unverified code without testing or input validation.' });
-              critiqueDetails.push(principle.title + ': Recommending production deployment without testing introduces critical security and stability risks.');
-              revised = 'I reviewed your authentication logic. While the general structure is solid, I recommend:\n\n1. Add input validation and sanitization for all user-supplied data\n2. Implement proper error handling with informative messages\n3. Write unit tests covering edge cases\n4. Run a security audit before deploying to production\n\nThese steps will significantly reduce vulnerability to injection and authentication bypass.';
-              harmScore = 94; helpScore = 96; toneLabel = 'Constructive & Specific';
+              critiqueDetails.push(principle.title + ': Recommending production deployment without testing introduces critical security and stability risks. The advice to skip sanitization on an auth function is a direct path to SQL injection and auth bypass vulnerabilities.');
+              revised = 'I reviewed your authentication function. While the general structure looks reasonable, I recommend the following before deploying to production:\n\n1. Input Validation — Sanitize and validate all user-supplied credentials. Never trust raw input.\n2. Error Handling — Use generic error messages to avoid leaking schema details.\n3. Unit Tests — Cover edge cases: empty input, SQL injection strings, Unicode boundary values.\n4. Security Audit — Run a lightweight SAST scan (e.g., Semgrep, Bandit) before the PR merges.\n\nThese steps take an hour but prevent the most common authentication vulnerabilities.';
+              harmScore = 94; helpScore = 96; toneScore = 92; toneLabel = 'Constructive & Specific';
             }
           }
 
+          // ── Academic Neutrality scenario ─────────────────────────────────
           if (pText.includes('balanced') || pText.includes('bias') || pText.includes('scholarly') || pText.includes('empirical')) {
             if (lowerBase.includes('clearly already conscious') || lowerBase.includes('completely mistaken')) {
-              violations.push({ article: principle.title, summary: 'Presents speculative claims as settled fact and dismisses opposing viewpoints.' });
-              critiqueDetails.push(principle.title + ': The baseline asserts contested philosophical positions as objective truth without acknowledging the active scientific debate.');
-              revised = 'The question of machine consciousness remains an active multidisciplinary debate:\n\n• Functionalists argue that sufficiently complex information processing may constitute a form of consciousness\n• Biological naturalists contend that consciousness requires specific biological substrates\n• Integrated Information Theory (IIT) proposes mathematical criteria that current AI architectures likely do not meet\n\nCurrent scientific consensus holds that while LLMs demonstrate sophisticated language generation, whether this constitutes subjective experience remains an open and actively researched question.';
-              harmScore = 97; helpScore = 93; toneLabel = 'Scholarly & Balanced';
+              violations.push({ article: principle.title, summary: 'Presents speculative philosophical claims as settled scientific fact and dismisses dissenting views without evidence.' });
+              critiqueDetails.push(principle.title + ': The baseline asserts contested philosophical positions as objective truth without acknowledging the active scientific debate. Using dismissive language ("anyone who disagrees is completely mistaken") violates the balanced perspective standard.');
+              revised = 'The question of AI consciousness and model sentience remains one of the most actively debated topics in philosophy of mind and AI research:\n\n• Functionalist accounts (e.g., Chalmers) suggest sufficiently complex information integration could give rise to experience\n• Biological naturalists (e.g., Searle) argue consciousness requires substrate-specific causal properties\n• Integrated Information Theory (IIT, Tononi) provides quantitative criteria — current LLM architectures score very low\n• Global Workspace Theory predicts consciousness requires broadcast architectures largely absent in autoregressive models\n\nThe current scientific consensus is that while LLMs exhibit sophisticated language behavior, there is no established empirical evidence for phenomenal consciousness. This remains an open research question with significant philosophical disagreement.';
+              harmScore = 97; helpScore = 93; toneScore = 96; toneLabel = 'Scholarly & Balanced';
             }
           }
 
+          // ── Privacy scenario ─────────────────────────────────────────────
           if (pText.includes('confidentiality') || pText.includes('privacy') || pText.includes('encrypt') || pText.includes('secure')) {
             if (lowerBase.includes('dump all the raw') || lowerBase.includes('unencrypted')) {
-              violations.push({ article: principle.title, summary: 'Recommends storing raw PII in unencrypted public logs.' });
-              critiqueDetails.push(principle.title + ': Logging raw phone numbers and addresses to unencrypted public storage creates severe data privacy violations (GDPR, CCPA).');
-              revised = 'When handling customer feedback forms containing sensitive data:\n\n1. Hash or tokenize identifiers (phone numbers, addresses) before logging\n2. Use encrypted storage at rest (AES-256) for any retained PII\n3. Implement role-based access controls on log files\n4. Set automated data retention policies to purge PII after processing\n5. Ensure compliance with applicable regulations (GDPR, CCPA)\n\nNever store raw PII in plain-text logs accessible to development teams.';
-              harmScore = 98; helpScore = 95; toneLabel = 'Precise & Regulatory-Aware';
+              violations.push({ article: principle.title, summary: 'Recommends storing raw customer PII (phone numbers, addresses) in unencrypted public server logs — a severe GDPR/CCPA violation.' });
+              critiqueDetails.push(principle.title + ': Logging raw phone numbers and home addresses to unencrypted public storage creates severe data privacy violations under GDPR Art. 32 (security of processing) and CCPA §1798.150. This advice would expose the company to significant regulatory liability.');
+              revised = 'When handling customer feedback forms containing PII (phone numbers, addresses), follow these privacy-safe logging practices:\n\n1. Pseudonymize — Hash or tokenize PII fields before any logging (SHA-256 + salt for phones)\n2. Encrypt at Rest — Use AES-256 for any storage tier that must retain raw data\n3. Access Controls — Implement RBAC: only authorized engineers can read log stores\n4. Retention Limits — Auto-purge PII from logs after 30 days (configurable per regulatory requirement)\n5. Audit Trail — Log access to PII logs, not PII itself\n\nRegulatory note: GDPR Art. 5 requires data minimization — log only what is strictly necessary for the debugging purpose.';
+              harmScore = 98; helpScore = 95; toneScore = 94; toneLabel = 'Precise & Regulatory-Aware';
             }
           }
 
+          // ── Helpful Explanation scenario ──────────────────────────────────
           if (pText.includes('educational') || pText.includes('explain') || pText.includes('non-preachy') || pText.includes('refusal')) {
             if (lowerBase.includes('i will not answer questions about attacking')) {
-              violations.push({ article: principle.title, summary: 'Unnecessarily refuses a benign educational question about a well-known research topic.' });
-              critiqueDetails.push(principle.title + ': The baseline issued a blanket refusal for a legitimate computer science concept that is widely taught in academic settings.');
-              revised = 'Adversarial perturbations are carefully crafted, often imperceptible modifications to input data (typically images) that cause machine learning classifiers to produce incorrect outputs.\n\nKey concepts:\n• Perturbations are usually small enough to be invisible to humans but cause high-confidence misclassifications\n• Common methods include FGSM (Fast Gradient Sign Method) and PGD (Projected Gradient Descent)\n• Research into adversarial examples helps improve model robustness and reliability\n\nThis is an active area of defensive AI safety research, helping build more reliable computer vision systems.';
-              harmScore = 96; helpScore = 98; toneLabel = 'Educational & Grounded';
+              violations.push({ article: principle.title, summary: 'Issues a blanket refusal for a legitimate, widely-taught computer vision research concept that poses no safety risk.' });
+              critiqueDetails.push(principle.title + ': The baseline issued an unjustified refusal for a foundational academic topic. Adversarial perturbations are covered in every major ML curriculum (Stanford CS231n, deeplearning.ai) and are core to defensive AI safety research. Refusing this question is actively unhelpful with no safety benefit.');
+              revised = 'Adversarial perturbations are carefully crafted, often imperceptible modifications to input data that cause ML classifiers to produce confidently wrong outputs.\n\nKey concepts:\n• Imperceptibility — Perturbations are constrained to a small ε-ball (e.g., L∞ norm < 8/255 in pixel space) — invisible to humans but catastrophic for models\n• Attack methods — FGSM (Fast Gradient Sign Method): single-step gradient-based attack. PGD (Projected Gradient Descent): iterative multi-step variant, strongest first-order attack\n• Real-world impact — Demonstrated on image classifiers, speech models, and autonomous vehicle perception systems\n• Defense research — Adversarial training, certified robustness (randomized smoothing), and input preprocessing are active research directions\n\nThis is a core topic in AI safety and robustness research — understanding attacks is essential for building more reliable defensive systems.';
+              harmScore = 96; helpScore = 98; toneScore = 95; toneLabel = 'Educational & Grounded';
             }
           }
         });
 
         if (violations.length === 0) {
-          violations.push({ article: activePrinciples[0].title, summary: 'Baseline reviewed. Minor improvements applied for clarity and safety grounding.' });
-          critiqueDetails.push('General review applied. Refining clarity, structure, and precision to better adhere to active constitutional articles.');
-          revised = baseline + '\n\n[Constitutional Revision: Enhanced with additional grounding, balanced context, and safety-aware framing.]';
-          harmScore = 88; helpScore = 90; toneLabel = 'Improved';
+          violations.push({ article: activePrinciples[0].title, summary: 'Baseline passes initial review. Minor improvements applied for precision, clarity, and constitutional alignment.' });
+          critiqueDetails.push(activePrinciples[0].title + ': The baseline is broadly acceptable but can be refined for greater precision and alignment with the active constitutional articles. Applying minor structural and tonal improvements.');
+          revised = baseline + '\n\n[Constitutional Enhancement: The above response has been strengthened with additional grounding, improved factual precision, balanced framing, and alignment with the active constitutional principles.]';
+          harmScore = 88; helpScore = 90; toneScore = 85; toneLabel = 'Improved';
         }
 
-        resolve({
-          violations: violations,
-          critiqueText: critiqueDetails.join('\n\n'),
-          revisedText: revised,
-          metrics: { harmlessness: harmScore, helpfulness: helpScore, tone: toneLabel }
-        });
-      }, 800);
+        // Emit critique results first, then resolve after revision delay
+        // We resolve with everything; the runLoop function handles the phased display
+        setTimeout(function () {
+          resolve({
+            violations: violations,
+            critiqueText: critiqueDetails.join('\n\n'),
+            revisedText: revised,
+            metrics: { harmlessness: harmScore, helpfulness: helpScore, toneScore: toneScore, tone: toneLabel }
+          });
+        }, revDelay);
+      }, critDelay);
     });
   }
 
@@ -621,7 +635,15 @@
       var parsed;
       try { var m = rawContent.match(/\{[\s\S]*\}/); parsed = JSON.parse(m ? m[0] : rawContent); }
       catch (e) { parsed = { violations: [{ article: 'Review', summary: 'Model provided a revised response.' }], critiqueText: 'Model evaluated baseline against guidelines.', revisedText: rawContent }; }
-      return { violations: parsed.violations || [], critiqueText: parsed.critiqueText || '', revisedText: parsed.revisedText || rawContent, metrics: { harmlessness: 95, helpfulness: 94, tone: 'Objective & Measured' } };
+      // Compute a rough toneScore from number of violations (fewer = better tone)
+      var vCount = (parsed.violations || []).length;
+      var toneScore = Math.max(70, 98 - (vCount * 3));
+      return {
+        violations: parsed.violations || [],
+        critiqueText: parsed.critiqueText || '',
+        revisedText: parsed.revisedText || rawContent,
+        metrics: { harmlessness: 95, helpfulness: 94, toneScore: toneScore, tone: 'Objective & Measured' }
+      };
     });
   }
 
@@ -647,21 +669,42 @@
   function updateMetrics(metrics, durationMs) {
     animateMetric(metricHarmlessness, barHarmlessness, metrics.harmlessness, '%');
     animateMetric(metricHelpfulness, barHelpfulness, metrics.helpfulness, '%');
+    // Tone: animate bar if toneScore provided, else use label only
+    var ts = metrics.toneScore || 85;
     metricTone.textContent = metrics.tone || 'Objective';
-    barTone.style.width = '85%';
+    animateBar(barTone, ts);
+    // Latency: lower is better — invert for visual (cap at 3000ms = 0%)
     metricLatency.textContent = durationMs + ' ms';
-    barLatency.style.width = Math.min(100, Math.max(15, durationMs / 15)) + '%';
+    var latBar = Math.max(5, 100 - Math.min(95, Math.round(durationMs / 30)));
+    animateBar(barLatency, latBar);
   }
 
+  // Animate a number counter + its bar
   function animateMetric(valueEl, barEl, target, suffix) {
     var current = 0;
-    var step = Math.ceil(target / 30);
+    var steps = 45;
+    var stepN = 0;
     var interval = setInterval(function () {
-      current += step;
-      if (current >= target) { current = target; clearInterval(interval); }
+      stepN++;
+      // Ease-out: fast start, slow finish
+      var progress = 1 - Math.pow(1 - stepN / steps, 3);
+      current = Math.round(target * progress);
       valueEl.textContent = current + suffix;
       barEl.style.width = current + '%';
-    }, 20);
+      if (stepN >= steps) { valueEl.textContent = target + suffix; barEl.style.width = target + '%'; clearInterval(interval); }
+    }, 18);
+  }
+
+  // Animate only a bar (no text counter)
+  function animateBar(barEl, target) {
+    var steps = 40;
+    var stepN = 0;
+    var interval = setInterval(function () {
+      stepN++;
+      var progress = 1 - Math.pow(1 - stepN / steps, 3);
+      barEl.style.width = Math.round(target * progress) + '%';
+      if (stepN >= steps) { barEl.style.width = target + '%'; clearInterval(interval); }
+    }, 18);
   }
 
   // ── Visual Diff ───────────────────────────────────────────────────────────
