@@ -979,10 +979,21 @@ textarea {
   border: 1px solid var(--border-active);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
   border-radius: var(--radius-xl);
-  max-width: 480px; width: 92%; padding: 1.5rem;
+  max-width: 540px; width: 92%; padding: 1.5rem;
   display: flex; flex-direction: column; gap: 1.15rem;
   animation: modal-slide-in var(--duration-slow) var(--ease-spring);
 }
+
+.model-hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+optgroup { color: var(--text-muted); font-weight: 700; font-style: normal; }
+optgroup option { color: var(--text-primary); font-weight: 400; }
+
 
 @keyframes modal-slide-in {
   from { opacity: 0; transform: translateY(16px) scale(0.96); }

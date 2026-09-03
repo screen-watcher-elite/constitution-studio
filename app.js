@@ -65,7 +65,7 @@
     principles: cloneArray(PRESETS['anthropic-harmless']),
     provider: localStorage.getItem('cs_provider') || 'demo',
     apiKey: localStorage.getItem('cs_api_key') || '',
-    model: localStorage.getItem('cs_model') || 'anthropic/claude-3.5-sonnet',
+    model: localStorage.getItem('cs_model') || 'nvidia/nemotron-3.5-lightning:free',
     lastBaseline: '',
     lastRevision: '',
     lastResult: null,
@@ -907,7 +907,12 @@
     btnApiSettings.addEventListener('click', function () {
       providerSelect.value = state.provider;
       inputApiKey.value = state.apiKey;
-      inputModelName.value = state.model;
+      // Sync select to saved model, fallback to first option
+      if (state.model) {
+        var opt = inputModelName.querySelector('option[value="' + state.model + '"]');
+        if (opt) { inputModelName.value = state.model; }
+        else { inputModelName.selectedIndex = 0; }
+      }
       toggleKeyInputs();
       modalApi.classList.remove('hidden');
     });
@@ -919,7 +924,8 @@
     btnSaveKey.addEventListener('click', function () {
       state.provider = providerSelect.value;
       state.apiKey = inputApiKey.value.trim();
-      state.model = inputModelName.value.trim();
+      // inputModelName is now a <select> — .value works the same
+      state.model = inputModelName.value;
       localStorage.setItem('cs_provider', state.provider);
       localStorage.setItem('cs_api_key', state.apiKey);
       localStorage.setItem('cs_model', state.model);
@@ -931,7 +937,10 @@
     btnClearKey.addEventListener('click', function () {
       state.provider = 'demo'; state.apiKey = ''; state.model = '';
       localStorage.removeItem('cs_provider'); localStorage.removeItem('cs_api_key'); localStorage.removeItem('cs_model');
-      providerSelect.value = 'demo'; inputApiKey.value = ''; inputModelName.value = '';
+      providerSelect.value = 'demo';
+      inputApiKey.value = '';
+      // Reset select to first option (Free Tier Nemotron)
+      inputModelName.selectedIndex = 0;
       toggleKeyInputs(); updateApiStatus();
       showToast('API key cleared');
     });

@@ -351,19 +351,59 @@
           <label for="provider-select">Provider:</label>
           <select id="provider-select">
             <option value="demo">Demo Simulation Mode (No Key Needed)</option>
-            <option value="openrouter">OpenRouter API (Free & Commercial)</option>
+            <option value="openrouter">OpenRouter API (Free &amp; Commercial)</option>
             <option value="anthropic">Anthropic Claude API (Direct)</option>
           </select>
         </div>
 
         <div id="key-input-container" class="form-group hidden">
           <label for="input-api-key">API Key:</label>
-          <input type="password" id="input-api-key" placeholder="sk-ant-... or sk-or-v1-...">
+          <input type="password" id="input-api-key" placeholder="sk-ant-api03-... or sk-or-v1-...">
         </div>
 
         <div id="model-input-container" class="form-group hidden">
-          <label for="input-model-name">Model Identifier:</label>
-          <input type="text" id="input-model-name" placeholder="anthropic/claude-3.5-sonnet">
+          <label for="input-model-name">Model:</label>
+          <select id="input-model-name">
+            <!-- ── FREE TESTING ──────────────────────────────── -->
+            <optgroup label="🆓 Free Tier (Testing)">
+              <option value="nvidia/nemotron-3.5-lightning:free">NVIDIA Nemotron 3.5 Lightning · Free (30B MoE, 1M ctx)</option>
+              <option value="meta-llama/llama-3.3-70b-instruct:free">Meta Llama 3.3 70B Instruct · Free</option>
+            </optgroup>
+            <!-- ── ANTHROPIC ─────────────────────────────────── -->
+            <optgroup label="🟠 Anthropic (Direct or via OpenRouter)">
+              <option value="anthropic/claude-fable-5.1">Claude Fable 5.1 · Sep 2026 flagship 🔥</option>
+              <option value="anthropic/claude-opus-5">Claude Opus 5 · Jul 2026</option>
+              <option value="anthropic/claude-opus-4">Claude Opus 4 · Apr 2026</option>
+              <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 · Nov 2025</option>
+              <option value="anthropic/claude-sonnet-4">Claude Sonnet 4</option>
+              <option value="anthropic/claude-haiku-4">Claude Haiku 4 · Fast &amp; Cheap</option>
+            </optgroup>
+            <!-- ── OPENAI ────────────────────────────────────── -->
+            <optgroup label="🟢 OpenAI">
+              <option value="openai/gpt-5">GPT-5 · Latest flagship</option>
+              <option value="openai/gpt-5-mini">GPT-5 Mini · Fast</option>
+              <option value="openai/o4-mini">o4-mini · Reasoning</option>
+              <option value="openai/o3">o3 · Deep reasoning</option>
+            </optgroup>
+            <!-- ── GOOGLE ────────────────────────────────────── -->
+            <optgroup label="🔵 Google">
+              <option value="google/gemini-3-pro-preview">Gemini 3 Pro Preview 🔥</option>
+              <option value="google/gemini-3-flash-preview">Gemini 3 Flash Preview · Fast</option>
+              <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+              <option value="google/gemini-2.5-flash">Gemini 2.5 Flash · Fast</option>
+            </optgroup>
+            <!-- ── MISTRAL ────────────────────────────────────── -->
+            <optgroup label="⚡ Mistral AI">
+              <option value="mistralai/mistral-large-2512">Mistral Large 3 (2512) · Flagship</option>
+              <option value="mistralai/codestral-2501">Codestral 2501 · Code</option>
+            </optgroup>
+            <!-- ── META ──────────────────────────────────────── -->
+            <optgroup label="🦙 Meta">
+              <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B Instruct</option>
+              <option value="meta-llama/llama-3.1-405b-instruct">Llama 3.1 405B Instruct</option>
+            </optgroup>
+          </select>
+          <p class="model-hint">Tip: use the Free Tier option to test without spending credits.</p>
         </div>
       </div>
       <div class="modal-footer">
